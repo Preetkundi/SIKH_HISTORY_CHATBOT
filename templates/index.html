@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="pa">
+<head>
+    <meta charset="UTF-8">
+    <title>ਪੰਜਾਬੀ ਸਿੱਖ ਇਤਿਹਾਸ ਚੈਟਬੋਟ</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        html, body {
+            height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden; /* Prevent external scroll */
+        }
+        body {
+            min-height: 100vh;
+            background: linear-gradient(120deg, #f0fff0 0, #dbeafe 100%);
+            font-family: 'Segoe UI', 'Noto Sans Gurmukhi', Arial, sans-serif;
+            position: relative;
+        }
+        .bg-anim {
+            position: fixed;
+            width: 100vw;
+            height: 100vh;
+            left: 0; top: 0; z-index: -1;
+            background: radial-gradient(circle at 30% 20%, #bbe1fa 22%, transparent 40%),
+                        radial-gradient(circle at 80% 60%, #e3ffe7 15%, transparent 40%);
+            animation: bgmove 6s infinite alternate;
+        }
+        @keyframes bgmove {
+            0% { background-position: 0 0, 100% 100%; }
+            100% { background-position: 60% 10%, 90% 90%; }
+        }
+        .container {
+            max-width: 900px;
+            width: 96vw;
+            height: 96vh;
+            margin: 2vh auto 0 auto;
+            background: #fff;
+            border-radius: 22px;
+            box-shadow: 0 7px 40px #6e9dc621;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .chat-header {
+            background: linear-gradient(90deg, #2ec4b6, #4266dd 90%);
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+            font-size: 1.47em;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+        .subtitle {
+            background: #f5faff;
+            padding: 12px 24px;
+            font-size: 1.05em;
+            color: #295564;
+            text-align: center;
+        }
+        .chat-area {
+            background: #f8fafc;
+            padding: 32px 36px 24px 36px;
+            flex: 1 1 0;
+            height: 0; /* For flexbox */
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .bubble-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            margin-bottom: -2px;
+        }
+        .bubble {
+            max-width: 800px;
+            min-width: 60px;
+            padding: 13px 20px;
+            font-size: 1.17em;
+            border-radius: 16px 16px 6px 18px;
+            background: #e0f2ff;
+            color: #253649;
+            box-shadow: 0 1px 5px #c6e2e5a0;
+            word-break: break-word;
+            align-self: flex-end;
+            margin: 0;
+            animation: popIn 0.4s;
+        }
+        .bubble.user {
+            background: linear-gradient(120deg, #eaf6f6 0, #f5fff5 100%);
+            border-radius: 17px 18px 17px 5px;
+            align-self: flex-end;
+            color: #182f39;
+            font-weight: 500;
+            margin-left: auto;
+            box-shadow: 0 1px 8px #daeaff96;
+        }
+        .bubble.bot {
+            background: linear-gradient(115deg, #d1faf2 0, #e4eafd 100%);
+            border-radius: 17px 17px 8px 17px;
+            align-self: flex-start;
+            color: #185e57;
+            font-weight: 500;
+            margin-right: auto;
+            box-shadow: 0 1px 9px #b5ebd4b2;
+        }
+        .avatar {
+            width: 33px; height: 33px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #fff;
+            border: 2.5px solid #c9e7ed;
+        }
+        .avatar.user {
+            background: #eaf6ff url('https://cdn-icons-png.flaticon.com/512/1687/1687819.png') center/80% no-repeat;
+            border: 2.5px solid #d6e9ff;
+        }
+        .avatar.bot {
+            background: #e0fff2 url('https://cdn-icons-png.flaticon.com/512/4470/4470316.png') center/78% no-repeat;
+            border: 2.5px solid #9ee7c1;
+        }
+        .actions-row {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: -11px;
+            margin-bottom: 3px;
+        }
+        .copy-btn {
+            background: #e6f4fb;
+            border: none;
+            color: #37829c;
+            border-radius: 8px;
+            padding: 3px 11px 3px 8px;
+            font-size: 0.99em;
+            margin-left: 5px;
+            cursor: pointer;
+            transition: background 0.14s;
+        }
+        .copy-btn:hover {
+            background: #bcf5e8;
+            color: #00436d;
+        }
+        .input-row {
+            background: #f7fbff;
+            padding: 18px 30px 18px 30px;
+            display: flex;
+            align-items: center;
+            gap: 0.7em;
+            border-top: 1.5px solid #e8eaf2;
+        }
+        .input-row input[type="text"] {
+            flex: 1;
+            padding: 14px 13px;
+            border: 1.5px solid #b2c5db;
+            border-radius: 10px;
+            font-size: 1.11em;
+            background: #f8fbff;
+            transition: border 0.2s;
+        }
+        .input-row input[type="text"]:focus {
+            outline: none;
+            border: 2px solid #46cfc0;
+        }
+        .input-row button {
+            background: linear-gradient(120deg, #46e3c4, #4266dd 90%);
+            color: #fff;
+            border: none;
+            padding: 13px 29px;
+            border-radius: 10px;
+            font-size: 1.12em;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 1px 7px #97ead9c6;
+            transition: background 0.17s, transform 0.13s;
+            letter-spacing: 0.7px;
+        }
+        .input-row button:hover {
+            background: linear-gradient(120deg, #4266dd 0, #46e3c4 100%);
+            transform: scale(1.05);
+        }
+        .footer {
+            text-align: center;
+            color: #7ca4b3;
+            margin-top: 13px;
+            font-size: 0.97em;
+            letter-spacing: 0.3px;
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.92); opacity: 0.38;}
+            70% { transform: scale(1.05);}
+            100% { transform: scale(1); opacity: 1;}
+        }
+        @media (max-width: 1200px) {
+            .container { max-width: 99vw;}
+            .chat-area { padding: 22px 4vw 16px 4vw; }
+        }
+        @media (max-width: 650px) {
+            .container { margin-top: 0; width: 100vw; height: 100vh;}
+            .chat-area { padding: 8px 1vw 8px 1vw; }
+            .input-row { padding: 10px 5px 10px 5px; }
+            .bubble { max-width: 93vw; font-size: 1em; padding: 10px 9px;}
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-anim"></div>
+    <div class="container">
+        <div class="chat-header">ਪੰਜਾਬੀ ਸਿੱਖ ਇਤਿਹਾਸ ਚੈਟਬੋਟ</div>
+        <div class="subtitle">ਸਿੱਖ ਇਤਿਹਾਸ ਬਾਰੇ ਆਪਣਾ ਸਵਾਲ ਪੁੱਛੋ (ਉੱਤਰ ਪੰਜਾਬੀ ਵਿੱਚ ਮਿਲੇਗਾ)</div>
+        <div class="chat-area" id="chat-area">
+            <!-- Chat bubbles appear here -->
+        </div>
+        <form class="input-row" id="ask-form" autocomplete="off">
+            <input type="text" id="question" name="question" required placeholder="ਆਪਣਾ ਸਵਾਲ ਇੱਥੇ ਲਿਖੋ..." autocomplete="off">
+            <button type="submit">ਪੁੱਛੋ</button>
+        </form>
+    </div>
+    <div class="footer">
+        &copy; 2025 ਪੰਜਾਬੀ ਸਿੱਖ ਇਤਿਹਾਸ ਬੋਟ | NLP Project
+    </div>
+    <script>
+        const chatArea = document.getElementById("chat-area");
+        const askForm = document.getElementById("ask-form");
+        const questionInput = document.getElementById("question");
+
+        function cleanText(text) {
+            return text.replace(/\*{2,}/g, '').trim();
+        }
+
+        function addBubble(text, isBot, allowCopy = false) {
+            text = cleanText(text); // Clean unwanted markdown
+            const row = document.createElement('div');
+            row.className = 'bubble-row';
+            const avatar = document.createElement('div');
+            avatar.className = 'avatar ' + (isBot ? 'bot' : 'user');
+            if (isBot) row.appendChild(avatar);
+
+            const bubble = document.createElement('div');
+            bubble.className = 'bubble ' + (isBot ? 'bot' : 'user');
+            bubble.textContent = text;
+
+            row.appendChild(bubble);
+
+            if (!isBot) row.appendChild(avatar);
+
+            if (isBot && allowCopy) {
+                const actions = document.createElement('div');
+                actions.className = 'actions-row';
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'copy-btn';
+                copyBtn.type = "button";
+                copyBtn.textContent = "ਕਾਪੀ";
+                copyBtn.onclick = () => {
+                    navigator.clipboard.writeText(text);
+                    copyBtn.textContent = "ਕਾਪੀ ਹੋ ਗਿਆ!";
+                    setTimeout(() => copyBtn.textContent = "ਕਾਪੀ", 1200);
+                };
+                actions.appendChild(copyBtn);
+                row.appendChild(actions);
+            }
+
+            chatArea.appendChild(row);
+            chatArea.scrollTop = chatArea.scrollHeight;
+        }
+
+        askForm.onsubmit = async function(e) {
+            e.preventDefault();
+            const question = questionInput.value.trim();
+            if (!question) return;
+
+            addBubble(question, false); // User bubble
+            questionInput.value = '';
+            addBubble("ਉੱਤਰ ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ...", true);
+
+            fetch("/ask", {
+                method: "POST",
+                headers: {"Content-Type": "application/x-www-form-urlencoded"},
+                body: "question=" + encodeURIComponent(question)
+            })
+            .then(r => r.json())
+            .then(data => {
+                // Remove loading bot bubble
+                const bubbles = chatArea.querySelectorAll('.bubble-row');
+                if (bubbles.length > 0) {
+                    const lastRow = bubbles[bubbles.length-1];
+                    const lastBotBubble = lastRow.querySelector('.bubble.bot');
+                    if (lastBotBubble && lastBotBubble.textContent === "ਉੱਤਰ ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ...") {
+                        lastRow.remove();
+                    }
+                }
+                addBubble(data.answer, true, true); // Bot answer with copy
+            })
+            .catch(err => {
+                // Remove loading bubble
+                const bubbles = chatArea.querySelectorAll('.bubble-row');
+                if (bubbles.length > 0) {
+                    const lastRow = bubbles[bubbles.length-1];
+                    const lastBotBubble = lastRow.querySelector('.bubble.bot');
+                    if (lastBotBubble && lastBotBubble.textContent === "ਉੱਤਰ ਲੋਡ ਹੋ ਰਿਹਾ ਹੈ...") {
+                        lastRow.remove();
+                    }
+                }
+                addBubble("ਉੱਤਰ ਲੋਡ ਕਰਨ ਵਿੱਚ ਗਲਤੀ ਆਈ।", true, true);
+            });
+        };
+    </script>
+</body>
+</html>
