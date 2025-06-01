@@ -1,3 +1,4 @@
+
 ---
 
 ## 🗂️ Data Collection & Preprocessing
@@ -77,9 +78,7 @@
 
 ---
 
-## 👤 Author
 
-Made by Himmat Singh for NLP Projects  
-[Feel free to fork or modify for your own educational use!]
 
 ---
+
